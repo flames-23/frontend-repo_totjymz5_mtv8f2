@@ -1,482 +1,365 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useState } from 'react'
 
-const apiBase = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
+function Container({ children, className = '' }) {
+  return (
+    <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>{children}</div>
+  )
+}
 
-function Section({ title, subtitle, children, tint = 'white' }) {
-  const tintMap = {
-    white: 'bg-white/80 border-white/40',
-    pink: 'bg-pink-50/80 border-pink-200/60',
-    blue: 'bg-sky-50/80 border-sky-200/60',
-    green: 'bg-emerald-50/80 border-emerald-200/60',
-    purple: 'bg-purple-50/80 border-purple-200/60',
+function Button({ children, variant = 'primary', href = '#', onClick }) {
+  const base = 'inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-offset-2'
+  const styles = {
+    primary: 'bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-600',
+    secondary: 'bg-white text-gray-900 border border-gray-200 hover:border-gray-300 focus:ring-gray-300',
+    ghost: 'bg-transparent text-emerald-700 hover:text-emerald-800',
+  }
+  if (href) {
+    return (
+      <a href={href} onClick={onClick} className={`${base} ${styles[variant]}`}>{children}</a>
+    )
   }
   return (
-    <div className={`backdrop-blur p-4 md:p-6 rounded-2xl shadow-md border ${tintMap[tint] || tintMap.white}`}>
-      <div className="mb-3">
-        <h2 className="text-xl md:text-2xl font-extrabold text-gray-800 flex items-center gap-2">
-          {title}
-          <span className="inline-block w-2 h-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 animate-pulse" />
-        </h2>
-        {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
-      </div>
-      {children}
+    <button onClick={onClick} className={`${base} ${styles[variant]}`}>{children}</button>
+  )
+}
+
+function NavBar() {
+  const [open, setOpen] = useState(false)
+  const navItems = [
+    { label: 'Programs', href: '#programs' },
+    { label: 'Therapists', href: '#therapists' },
+    { label: 'Why Us', href: '#why-us' },
+    { label: 'Pricing', href: '#pricing' },
+    { label: 'FAQ', href: '#faq' },
+  ]
+  return (
+    <header className="sticky top-0 z-40 backdrop-blur bg-white/70 border-b border-gray-100">
+      <Container className="flex items-center justify-between h-16">
+        <a href="#home" className="flex items-center gap-2">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold">YS</span>
+          <span className="font-extrabold text-lg tracking-tight">Your Saarthi</span>
+        </a>
+        <nav className="hidden md:flex items-center gap-8">
+          {navItems.map((n)=> (
+            <a key={n.href} href={n.href} className="text-sm text-gray-700 hover:text-gray-900">{n.label}</a>
+          ))}
+          <Button href="#contact" variant="primary">Get Started</Button>
+        </nav>
+        <button className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-lg border border-gray-200" onClick={()=>setOpen(!open)} aria-label="Toggle Menu">☰</button>
+      </Container>
+      {open && (
+        <div className="md:hidden border-t border-gray-100 bg-white">
+          <Container className="py-3 space-y-2">
+            {navItems.map((n)=> (
+              <a key={n.href} href={n.href} onClick={()=>setOpen(false)} className="block text-sm text-gray-700 hover:text-gray-900">{n.label}</a>
+            ))}
+            <Button href="#contact" onClick={()=>setOpen(false)} variant="primary">Get Started</Button>
+          </Container>
+        </div>
+      )}
+    </header>
+  )
+}
+
+function Hero() {
+  return (
+    <section id="home" className="relative overflow-hidden">
+      <div className="absolute inset-0 -z-10 bg-gradient-to-br from-emerald-50 via-white to-sky-50"/>
+      <Container className="py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
+        <div>
+          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-xs font-semibold border border-emerald-100">Clinically backed • Human + AI</div>
+          <h1 className="mt-4 text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900">Personalised mental healthcare for you and your family</h1>
+          <p className="mt-4 text-gray-600 text-base md:text-lg">Access compassionate therapists, science-based programs, and an assistant that supports you between sessions.</p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Button href="#contact" variant="primary">Book a free consult</Button>
+            <Button href="#programs" variant="secondary">Explore programs</Button>
+          </div>
+          <div className="mt-6 flex items-center gap-6 text-sm text-gray-600">
+            <div>⭐ 4.9 average rating</div>
+            <div>🔒 Confidential & secure</div>
+            <div>🧑‍⚕️ 100+ licensed experts</div>
+          </div>
+        </div>
+        <div className="relative">
+          <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-sky-100 to-emerald-100 border border-emerald-100 overflow-hidden shadow-xl">
+            <div className="absolute inset-0 grid grid-cols-3 gap-2 p-3">
+              <div className="rounded-xl bg-white shadow-sm border border-gray-100" />
+              <div className="rounded-xl bg-white shadow-sm border border-gray-100" />
+              <div className="rounded-xl bg-white shadow-sm border border-gray-100" />
+              <div className="col-span-3 rounded-xl bg-white shadow-md border border-gray-100" />
+            </div>
+          </div>
+          <div className="absolute -bottom-4 -left-4 bg-white rounded-xl shadow-lg border border-gray-100 px-4 py-3 text-sm">
+            <div className="font-semibold">Matched with Dr. Patel</div>
+            <div className="text-gray-600">CBT • Anxiety • Teens</div>
+          </div>
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+function SectionTitle({ eyebrow, title, subtitle }) {
+  return (
+    <div className="text-center mb-8">
+      {eyebrow && <div className="text-emerald-700 font-semibold text-xs mb-1">{eyebrow}</div>}
+      <h2 className="text-2xl md:text-3xl font-extrabold tracking-tight">{title}</h2>
+      {subtitle && <p className="mt-2 text-gray-600 max-w-2xl mx-auto">{subtitle}</p>}
     </div>
   )
 }
 
-function Badge({ children, color = 'blue' }) {
-  const colorMap = {
-    blue: 'bg-blue-100 text-blue-700',
-    green: 'bg-green-100 text-green-700',
-    yellow: 'bg-yellow-100 text-yellow-700',
-    red: 'bg-red-100 text-red-700',
-    gray: 'bg-gray-100 text-gray-700',
-    purple: 'bg-purple-100 text-purple-700',
-    pink: 'bg-pink-100 text-pink-700',
-  }
+function Programs() {
+  const items = [
+    { title: 'Therapy for Individuals', desc: 'One-on-one sessions with licensed therapists tailored to your needs.', icon: '🧠' },
+    { title: 'Teen & Parent Support', desc: 'Family-centred care for emotional health and digital wellbeing.', icon: '👨‍👩‍👧' },
+    { title: 'Anxiety & Mood Programs', desc: 'Structured, clinician-designed paths with tools and check-ins.', icon: '🌿' },
+    { title: 'Workplace Wellbeing', desc: 'Evidence-based programs to support teams and leaders.', icon: '🏢' },
+  ]
   return (
-    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${colorMap[color] || colorMap.blue}`}>
-      {children}
-    </span>
+    <section id="programs" className="py-16 bg-white">
+      <Container>
+        <SectionTitle eyebrow="Programs" title="Care that fits your life" subtitle="Choose the format and intensity that works best for you—our team helps you personalise the journey." />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {items.map((it)=> (
+            <div key={it.title} className="rounded-2xl border border-gray-100 p-5 bg-white hover:shadow-lg transition">
+              <div className="text-3xl">{it.icon}</div>
+              <div className="mt-3 font-semibold">{it.title}</div>
+              <p className="mt-1 text-sm text-gray-600">{it.desc}</p>
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+function WhyUs() {
+  const points = [
+    { title: 'Expert clinicians', text: 'Handpicked, licensed therapists with specialised training.' },
+    { title: 'Personalised plans', text: 'Assessments and matching ensure you get the right care.' },
+    { title: 'Measured outcomes', text: 'We track your progress and adapt based on data.' },
+    { title: 'Human + AI', text: 'Between sessions, our assistant helps you practice skills.' },
+  ]
+  return (
+    <section id="why-us" className="py-16 bg-emerald-50/60">
+      <Container>
+        <SectionTitle eyebrow="Why Choose Us" title="Clinical care, delivered with heart" subtitle="A modern experience that keeps the human connection at the centre." />
+        <div className="grid md:grid-cols-2 gap-8 items-center">
+          <div className="space-y-4">
+            {points.map((p)=> (
+              <div key={p.title} className="flex gap-4">
+                <div className="h-10 w-10 flex-none rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center">✓</div>
+                <div>
+                  <div className="font-semibold">{p.title}</div>
+                  <p className="text-sm text-gray-600">{p.text}</p>
+                </div>
+              </div>
+            ))}
+            <div className="pt-4"><Button href="#contact" variant="primary">Speak to a care guide</Button></div>
+          </div>
+          <div className="relative">
+            <div className="aspect-[4/3] rounded-2xl bg-white border border-gray-100 shadow-xl" />
+            <div className="absolute -bottom-4 -right-4 bg-white rounded-xl shadow-lg border border-gray-100 px-4 py-3 text-sm">
+              <div className="font-semibold">92% feel better in 6 weeks</div>
+              <div className="text-gray-600">Based on self-reported outcomes</div>
+            </div>
+          </div>
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+function Therapists() {
+  const people = [
+    { name: 'Dr. A. Patel', tags: 'CBT • Anxiety • Teens' },
+    { name: 'Dr. R. Sharma', tags: 'Relationships • Family' },
+    { name: 'Dr. K. Mehta', tags: 'Depression • Trauma' },
+    { name: 'Dr. L. Dutta', tags: 'Stress • Burnout' },
+  ]
+  return (
+    <section id="therapists" className="py-16 bg-white">
+      <Container>
+        <SectionTitle eyebrow="Therapists" title="You are in expert hands" subtitle="Our clinicians are licensed, experienced, and continuously supervised." />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {people.map((p)=> (
+            <div key={p.name} className="rounded-2xl border border-gray-100 bg-white overflow-hidden">
+              <div className="h-40 bg-gradient-to-br from-emerald-100 to-sky-100" />
+              <div className="p-4">
+                <div className="font-semibold">{p.name}</div>
+                <div className="text-sm text-gray-600">{p.tags}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+function Pricing() {
+  const tiers = [
+    { name: 'Intro Session', price: 'Free', features: ['15-min care consult', 'Needs assessment', 'Program recommendation'], cta: 'Book now' },
+    { name: 'Therapy', price: '₹1,999 / session', features: ['50-min session', 'Personalised plan', 'Progress tracking'], cta: 'Schedule' },
+    { name: 'Programs', price: 'From ₹999 / month', features: ['Self-paced lessons', 'Tools & trackers', 'Coach check-ins'], cta: 'Start program' },
+  ]
+  return (
+    <section id="pricing" className="py-16 bg-emerald-50/60">
+      <Container>
+        <SectionTitle eyebrow="Pricing" title="Simple, transparent pricing" subtitle="Use us for a one-off consult or ongoing care. No hidden fees." />
+        <div className="grid md:grid-cols-3 gap-6">
+          {tiers.map((t)=> (
+            <div key={t.name} className="rounded-2xl border border-gray-100 bg-white p-6 flex flex-col">
+              <div className="text-sm font-semibold text-emerald-700">{t.name}</div>
+              <div className="mt-2 text-2xl font-extrabold">{t.price}</div>
+              <ul className="mt-4 space-y-2 text-sm text-gray-600">
+                {t.features.map((f)=> (<li key={f} className="flex items-start gap-2"><span className="text-emerald-600">✓</span><span>{f}</span></li>))}
+              </ul>
+              <div className="mt-6"><Button href="#contact" variant="primary">{t.cta}</Button></div>
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+function Testimonials() {
+  const items = [
+    { quote: 'I felt heard and supported from day one. The tools helped between sessions.', name: 'A., Bengaluru' },
+    { quote: 'Matched with the right therapist in a day. Huge difference in my anxiety.', name: 'S., Mumbai' },
+    { quote: 'Our teen is calmer and more confident. The parent tips were priceless.', name: 'R., Pune' },
+  ]
+  return (
+    <section className="py-16 bg-white">
+      <Container>
+        <SectionTitle eyebrow="Stories" title="What our clients say" />
+        <div className="grid md:grid-cols-3 gap-6">
+          {items.map((t, i)=> (
+            <div key={i} className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+              <div className="text-3xl text-emerald-600">“”</div>
+              <p className="mt-2 text-gray-700">{t.quote}</p>
+              <div className="mt-4 text-sm text-gray-500">{t.name}</div>
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+function FAQ() {
+  const items = [
+    { q: 'How do I get matched with a therapist?', a: 'Answer a few questions and our team matches you based on your needs and preferences.' },
+    { q: 'Is it confidential?', a: 'Yes. Your information and sessions are kept strictly confidential and secure.' },
+    { q: 'Do you offer support for teens?', a: 'Yes. We provide specialised teen therapy and parent guidance programs.' },
+  ]
+  const [open, setOpen] = useState(0)
+  return (
+    <section id="faq" className="py-16 bg-emerald-50/60">
+      <Container>
+        <SectionTitle eyebrow="FAQ" title="Your questions, answered" />
+        <div className="space-y-3 max-w-3xl mx-auto">
+          {items.map((it, idx)=> (
+            <div key={it.q} className="rounded-xl border border-gray-100 bg-white">
+              <button onClick={()=>setOpen(open===idx? -1 : idx)} className="w-full px-4 py-3 flex items-center justify-between text-left">
+                <span className="font-semibold">{it.q}</span>
+                <span className="text-emerald-700">{open===idx? '−' : '+'}</span>
+              </button>
+              {open===idx && (
+                <div className="px-4 pb-4 text-sm text-gray-600">{it.a}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+function Contact() {
+  return (
+    <section id="contact" className="py-16 bg-white">
+      <Container>
+        <SectionTitle eyebrow="Get Started" title="Book a free consult" subtitle="Tell us a bit about you and we’ll reach out within 24 hours." />
+        <form className="max-w-2xl mx-auto grid sm:grid-cols-2 gap-4">
+          <input required placeholder="Full name" className="border border-gray-200 rounded-lg px-3 py-2" />
+          <input required placeholder="Email" type="email" className="border border-gray-200 rounded-lg px-3 py-2" />
+          <input required placeholder="Phone" className="border border-gray-200 rounded-lg px-3 py-2 sm:col-span-2" />
+          <select className="border border-gray-200 rounded-lg px-3 py-2 sm:col-span-2">
+            <option>What are you seeking help for?</option>
+            <option>Anxiety / Stress</option>
+            <option>Relationships</option>
+            <option>Teen support</option>
+            <option>Workplace wellbeing</option>
+          </select>
+          <textarea rows="4" placeholder="Anything you’d like us to know" className="border border-gray-200 rounded-lg px-3 py-2 sm:col-span-2" />
+          <div className="sm:col-span-2">
+            <Button href="mailto:hello@yoursaarthi.com?subject=Consult%20request" variant="primary">Request callback</Button>
+          </div>
+        </form>
+      </Container>
+    </section>
+  )
+}
+
+function Footer() {
+  return (
+    <footer className="bg-gray-50 border-t border-gray-100">
+      <Container className="py-10 grid md:grid-cols-4 gap-8 text-sm">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold">YS</span>
+            <span className="font-extrabold">Your Saarthi</span>
+          </div>
+          <p className="mt-3 text-gray-600">Modern, compassionate mental healthcare for individuals, teens, and families.</p>
+        </div>
+        <div>
+          <div className="font-semibold">Company</div>
+          <ul className="mt-2 space-y-1 text-gray-600">
+            <li><a href="#programs" className="hover:text-gray-900">Programs</a></li>
+            <li><a href="#therapists" className="hover:text-gray-900">Therapists</a></li>
+            <li><a href="#pricing" className="hover:text-gray-900">Pricing</a></li>
+            <li><a href="#faq" className="hover:text-gray-900">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <div className="font-semibold">Resources</div>
+          <ul className="mt-2 space-y-1 text-gray-600">
+            <li><a href="#" className="hover:text-gray-900">Blog</a></li>
+            <li><a href="#" className="hover:text-gray-900">Self-help tools</a></li>
+            <li><a href="#" className="hover:text-gray-900">Privacy</a></li>
+            <li><a href="#" className="hover:text-gray-900">Terms</a></li>
+          </ul>
+        </div>
+        <div>
+          <div className="font-semibold">Get in touch</div>
+          <ul className="mt-2 space-y-1 text-gray-600">
+            <li>hello@yoursaarthi.com</li>
+            <li>+91 98XX-XXXXXX</li>
+            <li>Mon–Sat, 9am–7pm IST</li>
+          </ul>
+        </div>
+      </Container>
+      <div className="text-center text-xs text-gray-500 pb-8">© {new Date().getFullYear()} Your Saarthi. For emergencies, contact your local helpline.</div>
+    </footer>
   )
 }
 
 export default function App() {
-  const [role, setRole] = useState('child')
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-
-  // auth fields
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [pin, setPin] = useState('')
-  const [parentId, setParentId] = useState('')
-
-  // chat
-  const [chatInput, setChatInput] = useState('')
-  const [messages, setMessages] = useState([])
-  const [riskScore, setRiskScore] = useState(0)
-  const [alertLevel, setAlertLevel] = useState(null)
-
-  // content card
-  const [content, setContent] = useState(null)
-
-  // timers (parent only)
-  const [dailyLimit, setDailyLimit] = useState(60)
-  const [sessionLimit, setSessionLimit] = useState(20)
-  const [timerChildId, setTimerChildId] = useState('')
-
-  // social tracking (parent only)
-  const [socialChildId, setSocialChildId] = useState('')
-  const [socialProvider, setSocialProvider] = useState('tiktok')
-  const [socialHandle, setSocialHandle] = useState('')
-  const [socialLinks, setSocialLinks] = useState([])
-  const [socialActivity, setSocialActivity] = useState([])
-
-  // deepfake
-  const [dfResult, setDfResult] = useState(null)
-  const [reportReason, setReportReason] = useState('')
-  const [reportNote, setReportNote] = useState('')
-
-  const greeting = useMemo(() => (role === 'parent' ? 'Parent' : 'Child'), [role])
-
-  useEffect(() => {
-    fetch(`${apiBase}/content/daily`).then(r => r.json()).then(setContent).catch(()=>{})
-  }, [])
-
-  const register = async () => {
-    try {
-      setLoading(true); setError('')
-      const res = await fetch(`${apiBase}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role, name, email: role==='parent'?email:undefined, parentId: role==='child'?parentId||undefined:undefined, pin: role==='child'?pin:undefined }),
-      })
-      if (!res.ok) throw new Error(await res.text())
-      const data = await res.json()
-      setUser({ userId: data.userId, role: data.role, name })
-      if (data.role === 'child') { setTimerChildId(data.userId); setSocialChildId(data.userId) }
-    } catch (e) {
-      setError(String(e.message||e))
-    } finally { setLoading(false) }
-  }
-
-  const login = async () => {
-    try {
-      setLoading(true); setError('')
-      const body = role === 'parent' ? { role, email } : { role, pin, userId: undefined }
-      const res = await fetch(`${apiBase}/auth/login`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
-      })
-      if (!res.ok) throw new Error(await res.text())
-      const data = await res.json()
-      setUser(data)
-      if (data.role === 'child') { setTimerChildId(data.userId); setSocialChildId(data.userId) }
-    } catch (e) {
-      setError(String(e.message||e))
-    } finally { setLoading(false) }
-  }
-
-  const sendChat = async () => {
-    if (!user?.userId || !chatInput.trim()) return
-    const input = chatInput
-    setMessages(prev => [...prev, { role: 'user', text: input }])
-    setChatInput('')
-    try {
-      const res = await fetch(`${apiBase}/chat`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: user.userId, text: input })
-      })
-      const data = await res.json()
-      setMessages(prev => [...prev, { role: 'assistant', text: data.reply, analysis: data.analysis }])
-      setRiskScore(data.riskScore || 0)
-      setAlertLevel(data.alertLevel || null)
-    } catch (e) {
-      setMessages(prev => [...prev, { role: 'assistant', text: 'Oops, there was a problem. Please try again.' }])
-    }
-  }
-
-  // Timers (parent only)
-  const loadTimer = async () => {
-    const id = timerChildId || user?.userId
-    if (!id) return
-    const r = await fetch(`${apiBase}/timers/${id}`)
-    const data = await r.json()
-    setDailyLimit(data.dailyLimit)
-    setSessionLimit(data.sessionLimit)
-  }
-
-  const saveTimer = async () => {
-    const id = timerChildId || user?.userId
-    if (!id) return
-    await fetch(`${apiBase}/timers/set`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ childId: id, dailyLimit: Number(dailyLimit), sessionLimit: Number(sessionLimit) }) })
-  }
-
-  // Social (parent only)
-  const refreshLinks = async () => {
-    const id = socialChildId || timerChildId || user?.userId
-    if (!id) return
-    const r = await fetch(`${apiBase}/social/${id}/links`)
-    const data = await r.json()
-    setSocialLinks(data)
-  }
-
-  const linkSocial = async () => {
-    const id = socialChildId || timerChildId || user?.userId
-    if (!id || !socialHandle) return
-    await fetch(`${apiBase}/social/link`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ childId: id, provider: socialProvider, handle: socialHandle }) })
-    setSocialHandle('')
-    refreshLinks()
-  }
-
-  const scanSocial = async () => {
-    const id = socialChildId || timerChildId || user?.userId
-    if (!id) return
-    await fetch(`${apiBase}/social/${id}/scan`, { method: 'POST' })
-    loadActivity()
-  }
-
-  const loadActivity = async () => {
-    const id = socialChildId || timerChildId || user?.userId
-    if (!id) return
-    const r = await fetch(`${apiBase}/social/${id}/activity`)
-    const data = await r.json()
-    setSocialActivity(data)
-  }
-
-  // Deepfake upload
-  const onDeepfakeUpload = async (e) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    const form = new FormData()
-    form.append('file', file)
-    const r = await fetch(`${apiBase}/safety/deepfake/detect`, { method: 'POST', body: form })
-    const data = await r.json()
-    setDfResult(data)
-  }
-
-  // Report submit
-  const submitReport = async () => {
-    if (!user?.userId || !reportReason) return
-    const payload = { reporterId: user.userId, reason: reportReason, note: reportNote || undefined, context: { page: 'app', ts: Date.now() } }
-    const r = await fetch(`${apiBase}/report`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-    const data = await r.json()
-    alert('Report submitted: ' + data.reportId)
-    setReportReason('')
-    setReportNote('')
-  }
-
-  const RiskPill = () => {
-    let color = 'green', label = 'Low'
-    if (riskScore >= 80) { color = 'red'; label = 'Critical' }
-    else if (riskScore >= 60) { color = 'yellow'; label = 'Concern' }
-    else if (riskScore >= 30) { color = 'blue'; label = 'Watch' }
-    return (
-      <div className="flex items-center gap-2">
-        <Badge color={color}>{label}</Badge>
-        <span className="text-sm text-gray-600">Score: {Math.round(riskScore)}</span>
-      </div>
-    )
-  }
-
-  const bubble = (size, delay, pos) => (
-    <span
-      key={pos}
-      className={`absolute rounded-full bg-white/40 blur-sm animate-[float_6s_ease-in-out_infinite]`}
-      style={{ width: size, height: size, left: pos, animationDelay: `${delay}s` }}
-    />
-  )
-
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-indigo-100 via-sky-100 to-emerald-100 text-gray-800">
-      <div className="pointer-events-none absolute inset-0">
-        {bubble(18, 0, '10%')}
-        {bubble(26, 1, '30%')}
-        {bubble(22, 2, '55%')}
-        {bubble(14, 3, '75%')}
-      </div>
-      <div className="relative max-w-6xl mx-auto p-4 md:p-8 space-y-6">
-        <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-pink-200 flex items-center justify-center animate-bounce">🌟</div>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-extrabold">Your Saarthi</h1>
-              <p className="text-sm text-gray-600">AI chat, analyzer, and parent tools</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={()=>setRole('child')} className={`px-3 py-2 rounded-full text-sm transition ${role==='child'?'bg-purple-600 text-white':'bg-white/80 hover:bg-white'}`}>Child</button>
-            <button onClick={()=>setRole('parent')} className={`px-3 py-2 rounded-full text-sm transition ${role==='parent'?'bg-purple-600 text-white':'bg-white/80 hover:bg-white'}`}>Parent</button>
-            {user && (
-              <div className="ml-2 flex items-center gap-2 bg-white/70 px-3 py-1 rounded-full shadow-sm">
-                <Badge color="gray">{user.role}</Badge>
-                <span className="text-sm">{user.name || 'User'}</span>
-                <button onClick={()=>{setUser(null); setMessages([])}} className="text-xs text-blue-600 underline">Logout</button>
-              </div>
-            )}
-          </div>
-        </header>
-
-        {/* Auth */}
-        {!user && (
-          <Section title={`${greeting} Login`} subtitle={role==='child' ? 'Enter your name and PIN to chat.' : 'Parents can manage timers and social links.'} tint={role==='child'?'blue':'purple'}>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <input className="w-full border rounded-lg px-3 py-2" placeholder="Name" value={name} onChange={e=>setName(e.target.value)} />
-                {role==='parent' && (
-                  <input className="w-full border rounded-lg px-3 py-2" placeholder="Email (parent)" value={email} onChange={e=>setEmail(e.target.value)} />
-                )}
-                {role==='child' && (
-                  <>
-                    <input className="w-full border rounded-lg px-3 py-2" placeholder="PIN (4 digits)" value={pin} onChange={e=>setPin(e.target.value)} />
-                    <input className="w-full border rounded-lg px-3 py-2" placeholder="Parent ID (optional)" value={parentId} onChange={e=>setParentId(e.target.value)} />
-                  </>
-                )}
-                <div className="flex gap-2">
-                  <button onClick={register} disabled={loading} className="px-4 py-2 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600">Register</button>
-                  <button onClick={login} disabled={loading} className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600">Login</button>
-                </div>
-                {error && <p className="text-sm text-red-600">{error}</p>}
-              </div>
-              <div className="bg-gradient-to-br from-yellow-50 to-pink-50 rounded-xl p-4 animate-[pop_0.5s_ease]">
-                <h3 className="font-semibold mb-2">Quick tips</h3>
-                <ul className="list-disc text-sm ml-5 space-y-1">
-                  {role==='child' ? (
-                    <>
-                      <li>Use a simple PIN you remember.</li>
-                      <li>Share how you feel. Try both happy and sad words.</li>
-                      <li>Look at the badges to see the emotion analyzer.</li>
-                    </>
-                  ) : (
-                    <>
-                      <li>Enter your email to sign in.</li>
-                      <li>Manage timers and social links after login.</li>
-                      <li>Scan activity to update the risk overview.</li>
-                    </>
-                  )}
-                </ul>
-              </div>
-            </div>
-          </Section>
-        )}
-
-        {/* Daily content */}
-        <Section title="Daily Positivity" subtitle="A little boost for today" tint="pink">
-          {content ? (
-            <div className="grid md:grid-cols-3 gap-3">
-              <div className="p-3 rounded-lg bg-white border hover:shadow transition"><p className="text-xs text-gray-500">Affirmation</p><p className="font-semibold">{content.affirmation}</p></div>
-              <div className="p-3 rounded-lg bg-white border hover:shadow transition"><p className="text-xs text-gray-500">Quote</p><p className="font-semibold">{content.quote}</p></div>
-              <div className="p-3 rounded-lg bg-white border hover:shadow transition"><p className="text-xs text-gray-500">Joke</p><p className="font-semibold">{content.joke}</p></div>
-            </div>
-          ) : (
-            <p className="text-gray-600">Loading...</p>
-          )}
-        </Section>
-
-        {/* Chat (child and parent can use) */}
-        {user && (
-          <Section title="AI Assistant Chat" subtitle="Friendly, supportive, kid-safe" tint="white">
-            <div className="flex items-center justify-between mb-3">
-              <RiskPill />
-              {alertLevel && <Badge color={alertLevel==='critical'?'red':alertLevel==='concern'?'yellow':'blue'}>Alert: {alertLevel}</Badge>}
-            </div>
-            <div className="h-64 overflow-y-auto bg-white rounded-lg border p-3 space-y-2">
-              {messages.length === 0 && (
-                <div className="text-center text-gray-500 text-sm">Say hello and tell me how you feel today 💬</div>
-              )}
-              {messages.map((m, i) => (
-                <div key={i} className={`max-w-[80%] rounded-xl px-3 py-2 ${m.role==='user'?'bg-blue-100 ml-auto':'bg-gray-100'}`}>
-                  <p className="text-sm whitespace-pre-wrap">{m.text}</p>
-                  {m.analysis && (
-                    <div className="mt-1 flex gap-2">
-                      <Badge color={m.analysis.sentiment==='positive'?'green':m.analysis.sentiment==='negative'?'red':'gray'}>{m.analysis.sentiment}</Badge>
-                      {m.analysis.emotions?.map((e, idx)=>(<Badge key={idx} color="purple">{e}</Badge>))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-            <div className="mt-3 flex gap-2">
-              <input value={chatInput} onChange={e=>setChatInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter') sendChat()}} className="flex-1 border rounded-lg px-3 py-2" placeholder="Type a message" />
-              <button onClick={sendChat} className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700">Send</button>
-            </div>
-            <p className="text-xs text-gray-500 mt-2">If you are in immediate danger, call your local emergency number.</p>
-          </Section>
-        )}
-
-        {/* Parent-only: Timers */}
-        {user?.role === 'parent' && (
-          <Section title="Child Timers" subtitle="App-level limits" tint="green">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="block text-sm text-gray-600">Child ID</label>
-                <input className="w-full border rounded-lg px-3 py-2" placeholder="Child userId" value={timerChildId} onChange={e=>setTimerChildId(e.target.value)} />
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-sm text-gray-600">Daily Limit (min)</label>
-                    <input type="number" className="w-full border rounded-lg px-3 py-2" value={dailyLimit} onChange={e=>setDailyLimit(e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="block text-sm text-gray-600">Session Limit (min)</label>
-                    <input type="number" className="w-full border rounded-lg px-3 py-2" value={sessionLimit} onChange={e=>setSessionLimit(e.target.value)} />
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={loadTimer} className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Load</button>
-                  <button onClick={saveTimer} className="px-4 py-2 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600">Save</button>
-                </div>
-                <p className="text-xs text-gray-500">Note: This MVP controls limits inside the app only.</p>
-              </div>
-              <div className="bg-gradient-to-br from-white to-emerald-50 rounded-xl p-4">
-                <h3 className="font-semibold mb-2">How it works</h3>
-                <ul className="list-disc ml-5 text-sm space-y-1">
-                  <li>Parents set daily and session time for a child account.</li>
-                  <li>Future native app can enforce device-level controls.</li>
-                  <li>Celebrate healthy usage with rewards and stars ⭐</li>
-                </ul>
-              </div>
-            </div>
-          </Section>
-        )}
-
-        {/* Parent-only: Social tracking */}
-        {user?.role === 'parent' && (
-          <Section title="Social Activity" subtitle="Link accounts and scan for wellbeing signals" tint="blue">
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <label className="block text-sm text-gray-600">Child ID</label>
-                <input className="w-full border rounded-lg px-3 py-2" placeholder="Child userId" value={socialChildId} onChange={e=>setSocialChildId(e.target.value)} />
-                <div className="grid grid-cols-3 gap-2">
-                  <select className="border rounded-lg px-2 py-2" value={socialProvider} onChange={e=>setSocialProvider(e.target.value)}>
-                    <option value="tiktok">TikTok</option>
-                    <option value="instagram">Instagram</option>
-                    <option value="youtube">YouTube</option>
-                  </select>
-                  <input className="col-span-2 border rounded-lg px-3 py-2" placeholder="@handle" value={socialHandle} onChange={e=>setSocialHandle(e.target.value)} />
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={linkSocial} className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700">Link</button>
-                  <button onClick={refreshLinks} className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Load Links</button>
-                </div>
-                {socialLinks.length>0 && (
-                  <div className="text-sm text-gray-700">
-                    <p className="font-semibold">Linked:</p>
-                    <ul className="list-disc ml-5">
-                      {socialLinks.map((l,i)=>(<li key={i}>{l.provider}: {l.handle}</li>))}
-                    </ul>
-                  </div>
-                )}
-                <div className="flex gap-2 pt-2">
-                  <button onClick={scanSocial} className="px-4 py-2 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600">Scan Now</button>
-                  <button onClick={loadActivity} className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Refresh</button>
-                </div>
-                <p className="text-xs text-gray-500">MVP uses mock posts and on-device analysis. Instagram real scans require OAuth.</p>
-              </div>
-              <div className="md:col-span-2 bg-white rounded-xl border p-3 max-h-64 overflow-y-auto">
-                {socialActivity.length===0 ? (
-                  <div className="text-sm text-gray-500">No recent items. Link and scan to see activity.</div>
-                ) : (
-                  <ul className="space-y-2">
-                    {socialActivity.map((a,i)=>{
-                      const s = a.analysis?.sentiment || 'neutral'
-                      const color = s==='positive'? 'green' : s==='negative'? 'red' : 'gray'
-                      return (
-                        <li key={i} className="p-2 rounded-lg border bg-gray-50">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <Badge color="blue">{a.provider}</Badge>
-                              <Badge color="purple">{a.handle}</Badge>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Badge color={color}>{s}</Badge>
-                              <Badge color={a.risk>=60? 'yellow' : a.risk>=30? 'blue' : 'green'}>risk {Math.round(a.risk)}</Badge>
-                            </div>
-                          </div>
-                          <p className="text-sm mt-1">{a.text}</p>
-                          {a.analysis?.emotions?.length>0 && (
-                            <div className="mt-1 flex gap-1 flex-wrap">
-                              {a.analysis.emotions.map((e,idx)=>(<Badge key={idx} color="pink">{e}</Badge>))}
-                            </div>
-                          )}
-                        </li>
-                      )
-                    })}
-                  </ul>
-                )}
-              </div>
-            </div>
-          </Section>
-        )}
-
-        {/* Safety: Deepfake detector + Report */}
-        {user && (
-          <Section title="Safety Tools" subtitle="Check media authenticity and report issues" tint="pink">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm text-gray-600">Upload photo/video</label>
-                <input type="file" accept="image/*,video/*" onChange={onDeepfakeUpload} className="block w-full text-sm" />
-                {dfResult && (
-                  <div className="text-sm bg-white border rounded-lg p-3">
-                    <div className="flex items-center gap-2">
-                      <Badge color={dfResult.label==='likely'?'red':dfResult.label==='uncertain'?'yellow':'green'}>{dfResult.label}</Badge>
-                      <span>Suspicion: {Math.round(dfResult.suspicion)}</span>
-                    </div>
-                    <p className="text-gray-600">{dfResult.filename} • {dfResult.sizeKB} KB</p>
-                  </div>
-                )}
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm text-gray-600">Report an issue</label>
-                <input className="w-full border rounded-lg px-3 py-2" placeholder="Reason (required)" value={reportReason} onChange={e=>setReportReason(e.target.value)} />
-                <textarea className="w-full border rounded-lg px-3 py-2" rows={3} placeholder="Notes (optional)" value={reportNote} onChange={e=>setReportNote(e.target.value)} />
-                <button onClick={submitReport} className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">Submit Report</button>
-              </div>
-            </div>
-          </Section>
-        )}
-
-        <footer className="text-center text-xs text-gray-500 py-6">Built for wellbeing. Be kind to yourself 💚</footer>
-      </div>
+    <div className="min-h-screen bg-white text-gray-900">
+      <NavBar />
+      <Hero />
+      <Programs />
+      <WhyUs />
+      <Therapists />
+      <Pricing />
+      <Testimonials />
+      <FAQ />
+      <Contact />
+      <Footer />
     </div>
   )
 }
