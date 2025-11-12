@@ -74,6 +74,11 @@ export default function App() {
   const [socialLinks, setSocialLinks] = useState([])
   const [socialActivity, setSocialActivity] = useState([])
 
+  // deepfake
+  const [dfResult, setDfResult] = useState(null)
+  const [reportReason, setReportReason] = useState('')
+  const [reportNote, setReportNote] = useState('')
+
   const greeting = useMemo(() => (role === 'parent' ? 'Parent' : 'Child'), [role])
 
   useEffect(() => {
@@ -177,6 +182,28 @@ export default function App() {
     const r = await fetch(`${apiBase}/social/${id}/activity`)
     const data = await r.json()
     setSocialActivity(data)
+  }
+
+  // Deepfake upload
+  const onDeepfakeUpload = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const form = new FormData()
+    form.append('file', file)
+    const r = await fetch(`${apiBase}/safety/deepfake/detect`, { method: 'POST', body: form })
+    const data = await r.json()
+    setDfResult(data)
+  }
+
+  // Report submit
+  const submitReport = async () => {
+    if (!user?.userId || !reportReason) return
+    const payload = { reporterId: user.userId, reason: reportReason, note: reportNote || undefined, context: { page: 'app', ts: Date.now() } }
+    const r = await fetch(`${apiBase}/report`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+    const data = await r.json()
+    alert('Report submitted: ' + data.reportId)
+    setReportReason('')
+    setReportNote('')
   }
 
   const RiskPill = () => {
@@ -383,7 +410,7 @@ export default function App() {
                   <button onClick={scanSocial} className="px-4 py-2 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600">Scan Now</button>
                   <button onClick={loadActivity} className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Refresh</button>
                 </div>
-                <p className="text-xs text-gray-500">MVP uses mock posts and on-device analysis.</p>
+                <p className="text-xs text-gray-500">MVP uses mock posts and on-device analysis. Instagram real scans require OAuth.</p>
               </div>
               <div className="md:col-span-2 bg-white rounded-xl border p-3 max-h-64 overflow-y-auto">
                 {socialActivity.length===0 ? (
@@ -416,6 +443,33 @@ export default function App() {
                     })}
                   </ul>
                 )}
+              </div>
+            </div>
+          </Section>
+        )}
+
+        {/* Safety: Deepfake detector + Report */}
+        {user && (
+          <Section title="Safety Tools" subtitle="Check media authenticity and report issues" tint="pink">
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm text-gray-600">Upload photo/video</label>
+                <input type="file" accept="image/*,video/*" onChange={onDeepfakeUpload} className="block w-full text-sm" />
+                {dfResult && (
+                  <div className="text-sm bg-white border rounded-lg p-3">
+                    <div className="flex items-center gap-2">
+                      <Badge color={dfResult.label==='likely'?'red':dfResult.label==='uncertain'?'yellow':'green'}>{dfResult.label}</Badge>
+                      <span>Suspicion: {Math.round(dfResult.suspicion)}</span>
+                    </div>
+                    <p className="text-gray-600">{dfResult.filename} • {dfResult.sizeKB} KB</p>
+                  </div>
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-gray-600">Report an issue</label>
+                <input className="w-full border rounded-lg px-3 py-2" placeholder="Reason (required)" value={reportReason} onChange={e=>setReportReason(e.target.value)} />
+                <textarea className="w-full border rounded-lg px-3 py-2" rows={3} placeholder="Notes (optional)" value={reportNote} onChange={e=>setReportNote(e.target.value)} />
+                <button onClick={submitReport} className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">Submit Report</button>
               </div>
             </div>
           </Section>
