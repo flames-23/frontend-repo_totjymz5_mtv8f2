@@ -240,7 +240,7 @@ export default function App() {
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-pink-200 flex items-center justify-center animate-bounce">🌟</div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-extrabold">Wellbeing Assistant (MVP)</h1>
+              <h1 className="text-2xl md:text-3xl font-extrabold">Your Saarthi</h1>
               <p className="text-sm text-gray-600">AI chat, analyzer, and parent tools</p>
             </div>
           </div>
