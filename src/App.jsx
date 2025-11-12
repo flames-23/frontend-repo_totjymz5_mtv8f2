@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Brain, MessageSquare, Languages, Building2, Users, ShieldAlert, BarChart3, Library, CalendarCheck, ShieldCheck, Sparkles } from 'lucide-react'
 
 function Container({ children, className = '' }) {
   return (
@@ -23,12 +24,28 @@ function Button({ children, variant = 'primary', href = '#', onClick }) {
   )
 }
 
+function AnimatedLogo() {
+  const [hover, setHover] = useState(false)
+  return (
+    <span
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      className={`inline-flex h-9 w-9 items-center justify-center rounded-lg text-white font-bold transition-all duration-300 relative overflow-hidden ${hover ? 'shadow-[0_0_0_4px_rgba(16,185,129,0.25)]' : ''}`}
+      style={{ background: 'conic-gradient(from 180deg, #10b981, #34d399, #06b6d4, #10b981)' }}
+      aria-label="Your Saarthi"
+    >
+      <span className={`absolute inset-0 opacity-30 ${hover ? 'animate-spin-slow' : ''}`} />
+      <span className="relative z-10">YS</span>
+    </span>
+  )
+}
+
 function NavBar() {
   const [open, setOpen] = useState(false)
   const navItems = [
-    { label: 'Programs', href: '#programs' },
-    { label: 'Therapists', href: '#therapists' },
+    { label: 'Features', href: '#features' },
     { label: 'Why Us', href: '#why-us' },
+    { label: 'Team', href: '#therapists' },
     { label: 'Pricing', href: '#pricing' },
     { label: 'FAQ', href: '#faq' },
   ]
@@ -36,7 +53,7 @@ function NavBar() {
     <header className="sticky top-0 z-40 backdrop-blur bg-white/70 border-b border-gray-100">
       <Container className="flex items-center justify-between h-16">
         <a href="#home" className="flex items-center gap-2">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold">YS</span>
+          <AnimatedLogo />
           <span className="font-extrabold text-lg tracking-tight">Your Saarthi</span>
         </a>
         <nav className="hidden md:flex items-center gap-8">
@@ -67,31 +84,26 @@ function Hero() {
       <div className="absolute inset-0 -z-10 bg-gradient-to-br from-emerald-50 via-white to-sky-50"/>
       <Container className="py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-xs font-semibold border border-emerald-100">Clinically backed • Human + AI</div>
-          <h1 className="mt-4 text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900">Personalised mental healthcare for you and your family</h1>
-          <p className="mt-4 text-gray-600 text-base md:text-lg">Access compassionate therapists, science-based programs, and an assistant that supports you between sessions.</p>
+          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-xs font-semibold border border-emerald-100">Human care, AI-powered</div>
+          <h1 className="mt-4 text-3xl md:text-5xl font-extrabold tracking-tight text-gray-900">Your Saarthi for mental wellbeing</h1>
+          <p className="mt-4 text-gray-600 text-base md:text-lg">Personalised care paths, multilingual support, and always-on guidance—built for individuals, families, and teams.</p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Button href="#contact" variant="primary">Book a free consult</Button>
-            <Button href="#programs" variant="secondary">Explore programs</Button>
+            <Button href="#features" variant="primary">Explore features</Button>
+            <Button href="#contact" variant="secondary">Talk to us</Button>
           </div>
           <div className="mt-6 flex items-center gap-6 text-sm text-gray-600">
             <div>⭐ 4.9 average rating</div>
             <div>🔒 Confidential & secure</div>
-            <div>🧑‍⚕️ 100+ licensed experts</div>
+            <div>🌐 Hindi + English</div>
           </div>
         </div>
         <div className="relative">
-          <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-sky-100 to-emerald-100 border border-emerald-100 overflow-hidden shadow-xl">
-            <div className="absolute inset-0 grid grid-cols-3 gap-2 p-3">
-              <div className="rounded-xl bg-white shadow-sm border border-gray-100" />
-              <div className="rounded-xl bg-white shadow-sm border border-gray-100" />
-              <div className="rounded-xl bg-white shadow-sm border border-gray-100" />
-              <div className="col-span-3 rounded-xl bg-white shadow-md border border-gray-100" />
-            </div>
+          <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-xl border border-emerald-100">
+            <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=1600&auto=format&fit=crop" alt="People collaborating and supporting each other" className="h-full w-full object-cover" />
           </div>
           <div className="absolute -bottom-4 -left-4 bg-white rounded-xl shadow-lg border border-gray-100 px-4 py-3 text-sm">
-            <div className="font-semibold">Matched with Dr. Patel</div>
-            <div className="text-gray-600">CBT • Anxiety • Teens</div>
+            <div className="font-semibold">Smart care plan active</div>
+            <div className="text-gray-600">Weekly insights • Gentle nudges</div>
           </div>
         </div>
       </Container>
@@ -109,24 +121,38 @@ function SectionTitle({ eyebrow, title, subtitle }) {
   )
 }
 
-function Programs() {
-  const items = [
-    { title: 'Therapy for Individuals', desc: 'One-on-one sessions with licensed therapists tailored to your needs.', icon: '🧠' },
-    { title: 'Teen & Parent Support', desc: 'Family-centred care for emotional health and digital wellbeing.', icon: '👨‍👩‍👧' },
-    { title: 'Anxiety & Mood Programs', desc: 'Structured, clinician-designed paths with tools and check-ins.', icon: '🌿' },
-    { title: 'Workplace Wellbeing', desc: 'Evidence-based programs to support teams and leaders.', icon: '🏢' },
+function FeatureCard({ icon: Icon, title, desc }) {
+  return (
+    <div className="rounded-2xl border border-gray-100 p-5 bg-white hover:shadow-lg transition group">
+      <div className="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:bg-emerald-100 transition">
+        <Icon className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" />
+      </div>
+      <div className="mt-3 font-semibold">{title}</div>
+      <p className="mt-1 text-sm text-gray-600">{desc}</p>
+    </div>
+  )
+}
+
+function Features() {
+  const data = [
+    { icon: Brain, title: 'AI‑guided care paths', desc: 'Personalised plans that adapt to your mood, goals, and progress.' },
+    { icon: MessageSquare, title: '24/7 chat support', desc: 'Reach a human coach any time for check‑ins and guidance.' },
+    { icon: Languages, title: 'Hindi + English therapy', desc: 'Multilingual, culturally attuned support that meets you where you are.' },
+    { icon: Building2, title: 'Corporate wellness suite', desc: 'Dashboards, engagement tools, and impact reporting for teams.' },
+    { icon: Users, title: 'Community circles', desc: 'Moderated peer groups by topic with safe, supportive spaces.' },
+    { icon: ShieldAlert, title: 'Crisis ready', desc: 'Rapid escalation protocols and safety planning when needed.' },
+    { icon: BarChart3, title: 'Progress tracking', desc: 'Clear goals, weekly insights, and nudges to keep you moving.' },
+    { icon: Library, title: 'Self‑care library', desc: 'Guided audios, CBT tools, and mini‑courses you can use anytime.' },
+    { icon: CalendarCheck, title: 'One‑tap booking', desc: 'Instant scheduling for therapists, coaches, and group sessions.' },
+    { icon: ShieldCheck, title: 'Insurance support', desc: 'Help with reimbursements and cashless options where available.' },
   ]
   return (
-    <section id="programs" className="py-16 bg-white">
+    <section id="features" className="py-16 bg-white">
       <Container>
-        <SectionTitle eyebrow="Programs" title="Care that fits your life" subtitle="Choose the format and intensity that works best for you—our team helps you personalise the journey." />
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {items.map((it)=> (
-            <div key={it.title} className="rounded-2xl border border-gray-100 p-5 bg-white hover:shadow-lg transition">
-              <div className="text-3xl">{it.icon}</div>
-              <div className="mt-3 font-semibold">{it.title}</div>
-              <p className="mt-1 text-sm text-gray-600">{it.desc}</p>
-            </div>
+        <SectionTitle eyebrow="Features" title="Built for real‑world care" subtitle="Everything you need to start, stay on track, and feel supported—without the fluff." />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {data.map((f) => (
+            <FeatureCard key={f.title} icon={f.icon} title={f.title} desc={f.desc} />
           ))}
         </div>
       </Container>
@@ -156,13 +182,15 @@ function WhyUs() {
                 </div>
               </div>
             ))}
-            <div className="pt-4"><Button href="#contact" variant="primary">Speak to a care guide</Button></div>
+            <div className="pt-4"><Button href="#contact" variant="primary">Talk to our team</Button></div>
           </div>
           <div className="relative">
-            <div className="aspect-[4/3] rounded-2xl bg-white border border-gray-100 shadow-xl" />
+            <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-xl border border-gray-100">
+              <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?q=80&w=1600&auto=format&fit=crop" alt="Team wellbeing and collaboration" className="h-full w-full object-cover" />
+            </div>
             <div className="absolute -bottom-4 -right-4 bg-white rounded-xl shadow-lg border border-gray-100 px-4 py-3 text-sm">
               <div className="font-semibold">92% feel better in 6 weeks</div>
-              <div className="text-gray-600">Based on self-reported outcomes</div>
+              <div className="text-gray-600">Based on self‑reported outcomes</div>
             </div>
           </div>
         </div>
@@ -173,19 +201,21 @@ function WhyUs() {
 
 function Therapists() {
   const people = [
-    { name: 'Dr. A. Patel', tags: 'CBT • Anxiety • Teens' },
-    { name: 'Dr. R. Sharma', tags: 'Relationships • Family' },
-    { name: 'Dr. K. Mehta', tags: 'Depression • Trauma' },
-    { name: 'Dr. L. Dutta', tags: 'Stress • Burnout' },
+    { name: 'Dr. A. Patel', tags: 'CBT • Anxiety • Teens', img: 'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=1200&auto=format&fit=crop' },
+    { name: 'Dr. R. Sharma', tags: 'Relationships • Family', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=1200&auto=format&fit=crop' },
+    { name: 'Dr. K. Mehta', tags: 'Depression • Trauma', img: 'https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=1200&auto=format&fit=crop' },
+    { name: 'Dr. L. Dutta', tags: 'Stress • Burnout', img: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=1200&auto=format&fit=crop' },
   ]
   return (
     <section id="therapists" className="py-16 bg-white">
       <Container>
-        <SectionTitle eyebrow="Therapists" title="You are in expert hands" subtitle="Our clinicians are licensed, experienced, and continuously supervised." />
+        <SectionTitle eyebrow="Team" title="You are in expert hands" subtitle="Our clinicians are licensed, experienced, and continuously supervised." />
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {people.map((p)=> (
-            <div key={p.name} className="rounded-2xl border border-gray-100 bg-white overflow-hidden">
-              <div className="h-40 bg-gradient-to-br from-emerald-100 to-sky-100" />
+            <div key={p.name} className="rounded-2xl border border-gray-100 bg-white overflow-hidden hover:shadow-lg transition">
+              <div className="h-40 w-full overflow-hidden">
+                <img src={p.img} alt={p.name} className="h-full w-full object-cover" />
+              </div>
               <div className="p-4">
                 <div className="font-semibold">{p.name}</div>
                 <div className="text-sm text-gray-600">{p.tags}</div>
@@ -200,18 +230,18 @@ function Therapists() {
 
 function Pricing() {
   const tiers = [
-    { name: 'Intro Session', price: 'Free', features: ['15-min care consult', 'Needs assessment', 'Program recommendation'], cta: 'Book now' },
-    { name: 'Therapy', price: '₹1,999 / session', features: ['50-min session', 'Personalised plan', 'Progress tracking'], cta: 'Schedule' },
-    { name: 'Programs', price: 'From ₹999 / month', features: ['Self-paced lessons', 'Tools & trackers', 'Coach check-ins'], cta: 'Start program' },
+    { name: 'Care Plan', price: '₹999 / month', features: ['Smart care path', 'Weekly insights', 'Self‑care library'], cta: 'Start plan' },
+    { name: 'Guided Programs', price: '₹1,499 / month', features: ['CBT tools + audios', 'Coach check‑ins', 'One‑tap booking'], cta: 'Start program' },
+    { name: 'Enterprise', price: 'Custom', features: ['Dashboards & reports', 'Engagement tooling', 'Dedicated success team'], cta: 'Contact sales' },
   ]
   return (
     <section id="pricing" className="py-16 bg-emerald-50/60">
       <Container>
-        <SectionTitle eyebrow="Pricing" title="Simple, transparent pricing" subtitle="Use us for a one-off consult or ongoing care. No hidden fees." />
+        <SectionTitle eyebrow="Pricing" title="Simple, transparent options" subtitle="Choose a plan that fits—no consultations required." />
         <div className="grid md:grid-cols-3 gap-6">
           {tiers.map((t)=> (
             <div key={t.name} className="rounded-2xl border border-gray-100 bg-white p-6 flex flex-col">
-              <div className="text-sm font-semibold text-emerald-700">{t.name}</div>
+              <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700"><Sparkles className="h-4 w-4" />{t.name}</div>
               <div className="mt-2 text-2xl font-extrabold">{t.price}</div>
               <ul className="mt-4 space-y-2 text-sm text-gray-600">
                 {t.features.map((f)=> (<li key={f} className="flex items-start gap-2"><span className="text-emerald-600">✓</span><span>{f}</span></li>))}
@@ -227,14 +257,14 @@ function Pricing() {
 
 function Testimonials() {
   const items = [
-    { quote: 'I felt heard and supported from day one. The tools helped between sessions.', name: 'A., Bengaluru' },
-    { quote: 'Matched with the right therapist in a day. Huge difference in my anxiety.', name: 'S., Mumbai' },
-    { quote: 'Our teen is calmer and more confident. The parent tips were priceless.', name: 'R., Pune' },
+    { quote: 'The care plan nudges kept me consistent without pressure.', name: 'A., Bengaluru' },
+    { quote: 'Instant booking and Hindi support made it easy for my parents.', name: 'S., Mumbai' },
+    { quote: 'Our team dashboard finally shows impact, not just usage.', name: 'R., Pune' },
   ]
   return (
     <section className="py-16 bg-white">
       <Container>
-        <SectionTitle eyebrow="Stories" title="What our clients say" />
+        <SectionTitle eyebrow="Stories" title="What our users say" />
         <div className="grid md:grid-cols-3 gap-6">
           {items.map((t, i)=> (
             <div key={i} className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
@@ -251,9 +281,9 @@ function Testimonials() {
 
 function FAQ() {
   const items = [
-    { q: 'How do I get matched with a therapist?', a: 'Answer a few questions and our team matches you based on your needs and preferences.' },
-    { q: 'Is it confidential?', a: 'Yes. Your information and sessions are kept strictly confidential and secure.' },
-    { q: 'Do you offer support for teens?', a: 'Yes. We provide specialised teen therapy and parent guidance programs.' },
+    { q: 'Is this a consultation service?', a: 'No. We focus on structured care paths, programs, and ongoing support—not one‑off consultations.' },
+    { q: 'Can I talk to someone when I need help?', a: 'Yes. You can chat with a human coach 24/7 for guidance and check‑ins.' },
+    { q: 'Do you support Hindi?', a: 'Yes. We offer Hindi and English support across care, content, and coaching.' },
   ]
   const [open, setOpen] = useState(0)
   return (
@@ -282,13 +312,13 @@ function Contact() {
   return (
     <section id="contact" className="py-16 bg-white">
       <Container>
-        <SectionTitle eyebrow="Get Started" title="Book a free consult" subtitle="Tell us a bit about you and we’ll reach out within 24 hours." />
+        <SectionTitle eyebrow="Get in touch" title="Start your care plan" subtitle="Share a few details and we’ll get back within 24 hours." />
         <form className="max-w-2xl mx-auto grid sm:grid-cols-2 gap-4">
           <input required placeholder="Full name" className="border border-gray-200 rounded-lg px-3 py-2" />
           <input required placeholder="Email" type="email" className="border border-gray-200 rounded-lg px-3 py-2" />
           <input required placeholder="Phone" className="border border-gray-200 rounded-lg px-3 py-2 sm:col-span-2" />
           <select className="border border-gray-200 rounded-lg px-3 py-2 sm:col-span-2">
-            <option>What are you seeking help for?</option>
+            <option>What do you need support with?</option>
             <option>Anxiety / Stress</option>
             <option>Relationships</option>
             <option>Teen support</option>
@@ -296,7 +326,7 @@ function Contact() {
           </select>
           <textarea rows="4" placeholder="Anything you’d like us to know" className="border border-gray-200 rounded-lg px-3 py-2 sm:col-span-2" />
           <div className="sm:col-span-2">
-            <Button href="mailto:hello@yoursaarthi.com?subject=Consult%20request" variant="primary">Request callback</Button>
+            <Button href="mailto:hello@yoursaarthi.com?subject=Care%20plan%20inquiry" variant="primary">Send inquiry</Button>
           </div>
         </form>
       </Container>
@@ -310,16 +340,16 @@ function Footer() {
       <Container className="py-10 grid md:grid-cols-4 gap-8 text-sm">
         <div>
           <div className="flex items-center gap-2">
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white font-bold">YS</span>
+            <AnimatedLogo />
             <span className="font-extrabold">Your Saarthi</span>
           </div>
-          <p className="mt-3 text-gray-600">Modern, compassionate mental healthcare for individuals, teens, and families.</p>
+          <p className="mt-3 text-gray-600">Human care with AI assistance—multilingual, secure, and built for India.</p>
         </div>
         <div>
-          <div className="font-semibold">Company</div>
+          <div className="font-semibold">Explore</div>
           <ul className="mt-2 space-y-1 text-gray-600">
-            <li><a href="#programs" className="hover:text-gray-900">Programs</a></li>
-            <li><a href="#therapists" className="hover:text-gray-900">Therapists</a></li>
+            <li><a href="#features" className="hover:text-gray-900">Features</a></li>
+            <li><a href="#why-us" className="hover:text-gray-900">Why us</a></li>
             <li><a href="#pricing" className="hover:text-gray-900">Pricing</a></li>
             <li><a href="#faq" className="hover:text-gray-900">FAQ</a></li>
           </ul>
@@ -350,9 +380,10 @@ function Footer() {
 export default function App() {
   return (
     <div className="min-h-screen bg-white text-gray-900">
+      <style>{`@keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } .animate-spin-slow { animation: spin-slow 6s linear infinite; }`}</style>
       <NavBar />
       <Hero />
-      <Programs />
+      <Features />
       <WhyUs />
       <Therapists />
       <Pricing />
